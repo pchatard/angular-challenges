@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CityStore } from '../../data-access/city.store';
 import {
   FakeHttpService,
   randomCity,
 } from '../../data-access/fake-http.service';
-import { City } from '../../model/city.model';
 import { CardComponent } from '../../ui/card/card.component';
 import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
@@ -12,7 +12,7 @@ import { ListItemComponent } from '../../ui/list-item/list-item.component';
   selector: 'app-city-card',
   template: `
     <app-card
-      [list]="cities"
+      [list]="cities()"
       [listItemTemplate]="cityListItemTemplate"
       (addClicked)="add()">
       <img
@@ -38,15 +38,15 @@ import { ListItemComponent } from '../../ui/list-item/list-item.component';
   ],
 })
 export class CityCardComponent implements OnInit {
-  cities: City[] = [];
   constructor(
     private http: FakeHttpService,
     private store: CityStore,
   ) {}
 
+  cities = toSignal(this.store.cities$, { initialValue: [] });
+
   ngOnInit(): void {
     this.http.fetchCities$.subscribe((c) => this.store.addAll(c));
-    this.store.cities$.subscribe((c) => (this.cities = c));
   }
 
   add() {
