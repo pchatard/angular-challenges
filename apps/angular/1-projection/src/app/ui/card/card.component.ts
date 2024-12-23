@@ -1,4 +1,4 @@
-import { NgFor, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -17,12 +17,13 @@ import { ListItemComponent } from '../list-item/list-item.component';
       <ng-content select="card-image"></ng-content>
 
       <section>
-        <ng-container
-          *ngFor="let item of list"
-          [ngTemplateOutlet]="listItemTemplate || defaultTemplate"
-          [ngTemplateOutletContext]="{
-            $implicit: item
-          }"></ng-container>
+        @for (item of list; track item.id) {
+          <ng-container
+            [ngTemplateOutlet]="listItemTemplate || defaultTemplate"
+            [ngTemplateOutletContext]="{
+              $implicit: item
+            }"></ng-container>
+        }
       </section>
 
       <button
@@ -43,7 +44,7 @@ import { ListItemComponent } from '../list-item/list-item.component';
       }
     `,
   ],
-  imports: [NgFor, ListItemComponent, NgTemplateOutlet],
+  imports: [ListItemComponent, NgTemplateOutlet],
 })
 export class CardComponent<T extends { id: number }> {
   @Input() list: T[] | null = null;
